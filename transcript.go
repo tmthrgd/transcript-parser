@@ -30,7 +30,7 @@ func Parse(r io.Reader) (sections [][]byte, meta map[interface{}]interface{}, er
 
 	buf := new(bytes.Buffer)
 
-	var parts [][]byte
+	parts := make([][]byte, 0, 2)
 
 	metadata := make(map[interface{}]interface{})
 	var metaBuf bytes.Buffer

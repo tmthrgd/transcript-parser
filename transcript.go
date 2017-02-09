@@ -6,23 +6,22 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"unicode"
 
 	"gopkg.in/yaml.v2"
 )
 
-func fromHexChar(c byte) (b byte, skip bool, ok bool) {
+func fromHexChar(c byte) (b byte, ok bool) {
 	switch {
 	case '0' <= c && c <= '9':
-		return c - '0', false, true
+		return c - '0', true
 	case 'a' <= c && c <= 'f':
-		return c - 'a' + 10, false, true
+		return c - 'a' + 10, true
 	case 'A' <= c && c <= 'F':
-		return c - 'A' + 10, false, true
-	case c == ' ' || c == '\t':
-		return 0, true, false
+		return c - 'A' + 10, true
 	}
 
-	return 0, false, false
+	return 0, false
 }
 
 func Parse(r io.Reader) (sections [][]byte, meta map[interface{}]interface{}, err error) {
@@ -71,10 +70,12 @@ func Parse(r io.Reader) (sections [][]byte, meta map[interface{}]interface{}, er
 		}
 
 		for i := 0; i < len(data); i++ {
-			a, skip, ok := fromHexChar(data[i])
-			if skip {
-				continue
-			} else if !ok {
+			a, ok := fromHexChar(data[i])
+			if !ok {
+				if unicode.IsSpace(rune(data[i])) {
+					continue
+				}
+
 				err = fmt.Errorf("invalid format: expected hex or space, got %c", data[i])
 				return
 			}
@@ -84,7 +85,7 @@ func Parse(r io.Reader) (sections [][]byte, meta map[interface{}]interface{}, er
 				return
 			}
 
-			b, _, ok := fromHexChar(data[i])
+			b, ok := fromHexChar(data[i])
 			if !ok {
 				err = fmt.Errorf("invalid format: expected hex, got %c", data[i])
 				return

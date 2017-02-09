@@ -53,7 +53,7 @@ func Parse(r io.Reader) (sections [][]byte, meta map[interface{}]interface{}, er
 			}
 
 			metaBuf.Write(data[2:])
-			metaBuf.Write([]byte("\n"))
+			metaBuf.WriteByte('\n')
 			continue
 		}
 

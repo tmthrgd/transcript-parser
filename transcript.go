@@ -11,6 +11,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+var commentPrefix = []byte("# ")
+
 func fromHexChar(c byte) (b byte, ok bool) {
 	switch {
 	case '0' <= c && c <= '9':
@@ -45,7 +47,7 @@ func Parse(r io.Reader) (sections [][]byte, meta map[interface{}]interface{}, er
 			continue
 		}
 
-		if bytes.HasPrefix(data, []byte("# ")) {
+		if bytes.HasPrefix(data, commentPrefix) {
 			if len(parts) != 0 || buf.Len() != 0 {
 				err = errors.New("invalid format: metadata must preceed data")
 				return

@@ -93,7 +93,7 @@ func Parse(r io.Reader) (sections [][]byte, meta map[interface{}]interface{}, er
 				return
 			}
 
-			buf.WriteByte((a << 4) | b)
+			buf.WriteByte(a<<4 | b)
 		}
 	}
 
